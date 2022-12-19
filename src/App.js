@@ -37,15 +37,15 @@ function App() {
   // useEffect(() => {
   //   document.alert = `You clicked ${Add} times`;
   // });
-  function handleChange() {
-    alert(onChange)
+  function handleChange(a) {
+    alert(a);
   }
   //ハンドルチェンジされたときにqueryWeatherが実行される
   return (
     <>
       <h1>Wether</h1>
       <p>今日の天気は</p>
-      <select onChange={handleChange}>
+      <select onChange={e => handleChange(e.target.value)}>
         <option value="tokyo">東京</option>
         <option value="osaka">大阪</option>
         <option value="sapporo">札幌</option>
