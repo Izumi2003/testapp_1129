@@ -44,7 +44,6 @@ function App() {
   return (
     <>
       <h1>Wether</h1>
-      <hr />
       <p>今日の天気は</p>
       <select onChange={e => handleChange(e.target.value)}>
         <option value="tokyo">東京</option>
