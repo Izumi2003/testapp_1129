@@ -1,5 +1,5 @@
 import './App.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 function App() {
   return (<Weather></Weather>)
@@ -41,23 +41,40 @@ function App() {
 // });
 
 const Weather = () => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState([]);//JSONで返ってきたデータを保存するためのもの
+  const [loading, setLoading] = useState(true);//ローディング中か否かのフラグを設定する
+  const [city, setcityCode] = useState(130000);//都市コード用、初期値は東京エリア
 
-  function handleChange(a) {
-    alert(a);
-  }
-  async function querWether() {
-    const url =
-      "https://www.jma.go.jp/bosai/forecast/data/forecast/130000.json";
+  // function handleChange(a) {
+  //   alert(a);
+  // }
+
+  //useCallback(第一引数、第二引数)
+  //第二引数の値[city]の値が変化した時のみ、コールバック関数が再実行される
+  //これはfunction↓
+  const querWether = useCallback(async () => {
+    const url = `https://www.jma.go.jp/bosai/forecast/data/forecast/${city}.json`;
     const response = await fetch(url);
     const jsondata = await response.json();
+    //必要な部分のデータを上から順番にそって指定する
+
+    //必要なデータだけをsetData()で抜き出してステートに保存する
     setData(jsondata[0].timeSeries[0].areas[0]);
     setLoading(false);
+    console.log(data)
+  }, [city]);//ここまでが第一引数
+  //変化した時のみ実行(ここではボタンが切り替えられたとき)
+
+
+  const handleChange = (event) => {
+    setcityCode(event.target.value);//handleChangeにeventを指定し、valueを表示するため
+    setLoading(true);
   }
+
+
   useEffect(() => {
     querWether();
-  }, []);
+  }, [city, querWether]);//cityとquerWetherを使う
   let wetherinfo;
   if (loading) {
     wetherinfo = <p>loading</p>;
@@ -69,12 +86,12 @@ const Weather = () => {
   return (
     <>
       <h1>Wether</h1>
-      <p>今日の天気は</p>
+      <p>{data.area.name}今日の天気は{data.weathers[1]}</p>
       {wetherinfo}
-      <select onChange={e => handleChange(e.target.value)}>
-        <option value="tokyo">東京</option>
-        <option value="osaka">大阪</option>
-        <option value="sapporo">札幌</option>
+      <select onChange={handleChange}>
+        <option value="130000">東京</option>
+        <option value="270000">大阪</option>
+        <option value="016000">札幌</option>
       </select>
     </>
   )
@@ -82,7 +99,16 @@ const Weather = () => {
 
 
 
-
+/* <>
+      <h1>Wether</h1>
+      <p>今日の天気は</p>
+      {wetherinfo}
+      <select onChange={e => handleChange(e.target.value)}>
+        <option value="130000">東京</option>
+        <option value="270000">大阪</option>
+        <option value="016000">札幌</option>
+      </select>
+    </> */
 //ハンドルチェンジされたときにqueryWeatherが実行される
 
 
